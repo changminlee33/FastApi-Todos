@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <script>
+        async function fetchTodos() {
+            const response = await fetch('/todos');
+            const todos = await response.json();
+            const todoList = document.getElementById('todo-list');
+            todoList.innerHTML = '';
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.innerHTML = `${todo.title} - ${todo.description} 
+                    <button onclick="toggleComplete(${todo.id})">${todo.completed ? '✅' : '⬜'}</button>
+                    <button onclick="deleteTodo(${todo.id})">🗑️</button>`;
+                todoList.appendChild(li);
+            });
+        }
+
+        async function addTodo() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            if (!title || !description) {
+                alert("Title and description are required!");
+                return;
+            }
+            await fetch('/todos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, description, completed: false })
+            });
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            fetchTodos();
+        }
+
+        async function toggleComplete(todoId) {
+            const todos = await fetch('/todos').then(res => res.json());
+            const todo = todos.find(t => t.id === todoId);
+            if (!todo) return;
+
+            await fetch(`/todos/${todoId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    title: todo.title, 
+                    description: todo.description, 
+                    completed: !todo.completed 
+                })
+            });
+            fetchTodos();
+        }
+
+        async function deleteTodo(todoId) {
+            await fetch(`/todos/${todoId}`, {
+                method: 'DELETE'
+            });
+            fetchTodos();
+        }
+
+        window.onload = fetchTodos;
+    </script>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <input type="text" id="title" placeholder="Title">
+    <input type="text" id="description" placeholder="Description">
+    <button onclick="addTodo()">Add</button>
+    <ul id="todo-list"></ul>
+</body>
+</html>
