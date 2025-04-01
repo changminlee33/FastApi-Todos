@@ -12,8 +12,11 @@
             todoList.innerHTML = '';
             todos.forEach(todo => {
                 const li = document.createElement('li');
-                li.innerHTML = `${todo.title} - ${todo.description} 
+                li.innerHTML = `
+                    <span id="title-${todo.id}">${todo.title}</span> - 
+                    <span id="desc-${todo.id}">${todo.description}</span>
                     <button onclick="toggleComplete(${todo.id})">${todo.completed ? '✅' : '⬜'}</button>
+                    <button onclick="editTodo(${todo.id})">✏️</button>
                     <button onclick="deleteTodo(${todo.id})">🗑️</button>`;
                 todoList.appendChild(li);
             });
@@ -60,6 +63,27 @@
             fetchTodos();
         }
 
+        function editTodo(todoId) {
+            const titleSpan = document.getElementById(`title-${todoId}`);
+            const descSpan = document.getElementById(`desc-${todoId}`);
+
+            const newTitle = prompt("Enter new title:", titleSpan.textContent);
+            const newDescription = prompt("Enter new description:", descSpan.textContent);
+
+            if (newTitle !== null && newDescription !== null) {
+                updateTodo(todoId, newTitle, newDescription, false);
+            }
+        }
+
+        async function updateTodo(todoId, newTitle, newDescription, newCompleted) {
+            await fetch(`/todos/${todoId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle, description: newDescription, completed: newCompleted })
+            });
+            fetchTodos();
+        }
+
         window.onload = fetchTodos;
     </script>
 </head>
@@ -71,3 +95,4 @@
     <ul id="todo-list"></ul>
 </body>
 </html>
+
