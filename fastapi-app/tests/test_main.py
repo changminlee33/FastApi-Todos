@@ -62,5 +62,5 @@ def test_delete_todo():
     
 def test_delete_todo_not_found():
     response = client.delete("/todos/1")
-    assert response.status_code == 200
+    assert response.status_code == 404
     assert response.json()["message"] == "To-Do item deleted"
