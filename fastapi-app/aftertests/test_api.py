@@ -1,6 +1,6 @@
 import requests
 
-BASE_URL = "http://<서버IP>:<포트>"  # 배포된 서버 주소로 바꿔줘
+BASE_URL = "http://3.35.27.5:8002/"
 
 def test_get_todos_empty():
     response = requests.get(f"{BASE_URL}/todos")
