@@ -13,6 +13,7 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # To-Do 항목 모델
 class TodoItem(BaseModel):
+    id: int
     title: str
     description: str
     completed: bool
