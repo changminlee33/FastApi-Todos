@@ -7,7 +7,9 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 현재 파일 위치 기준 절대 경로 설정
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+app.mount("/static", StaticFiles(directory="STATIC_DIR"), name="static")
 
 # To-Do 항목 모델
 class TodoItem(BaseModel):
