@@ -1,6 +1,6 @@
 import requests
 
-BASE_URL = "http://3.35.27.5:8002/"
+BASE_URL = "http://43.201.106.189:8002/"
 
 def test_get_todos_empty():
     response = requests.get(f"{BASE_URL}/todos")
