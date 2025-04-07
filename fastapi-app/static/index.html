@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To-Do List</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        input, button { padding: 8px; margin: 5px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 5px 0; padding: 8px; background: #f0f0f0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>📋 To-Do List</h1>
+
+    <input type="text" id="title" placeholder="할 일 제목" />
+    <input type="text" id="description" placeholder="할 일 설명" />
+    <button id="submitBtn" onclick="addTodo()">추가</button>
+    <br />
+    <button onclick="fetchTodos()">전체 보기</button>
+    <button onclick="fetchCompleted()">완료 항목</button>
+    <button onclick="fetchNotCompleted()">미완료 항목</button>
+
+    <ul id="todoList"></ul>
+
+    <script>
+        const API = "/todos";
+        let editingId = null;
+
+        async function fetchTodos(endpoint = API) {
+            const res = await fetch(endpoint);
+            const todos = await res.json();
+            displayTodos(todos);
+        }
+
+        async function addTodo() {
+            const title = document.getElementById("title").value;
+            const description = document.getElementById("description").value;
+
+            const todo = { id: 0, title, description, completed: false };
+
+            await fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(todo)
+            });
+            clearForm();
+            fetchTodos();
+        }
+
+        async function deleteTodo(id) {
+            await fetch(`${API}/${id}`, { method: "DELETE" });
+            fetchTodos();
+        }
+
+    
+        async function updateTodo(id) {
+            const title = document.getElementById("title").value;
+            const description = document.getElementById("description").value;
+
+            const updated = { id, title, description, completed: false };
+
+            await fetch(`${API}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updated)
+            });
+            clearForm();
+            fetchTodos();
+        }
+
+        function clearForm() {
+            document.getElementById("title").value = "";
+            document.getElementById("description").value = "";
+            document.getElementById("submitBtn").innerText = "추가";
+            document.getElementById("submitBtn").onclick = addTodo;
+            editingId = null;
+        }
+
+        function editTodo(todoId) {
+            const titleSpan = document.getElementById(`title-${todoId}`);
+            const descSpan = document.getElementById(`desc-${todoId}`);
+
+            const newTitle = prompt("Enter new title:", titleSpan.textContent);
+            const newDescription = prompt("Enter new description:", descSpan.textContent);
+
+            if (newTitle !== null && newDescription !== null) {
+                updateTodo(todoId, newTitle, newDescription, false);
+            }
+        }
+
+
+        function displayTodos(todos) {
+            const list = document.getElementById("todoList");
+            list.innerHTML = "";
+            todos.forEach(todo => {
+                const item = document.createElement("li");
+                item.innerHTML = `
+                    <strong>${todo.title}</strong>: ${todo.description}
+                    [${todo.completed ? "완료" : "미완료"}]
+                    <button onclick="editTodo(${JSON.stringify(todo)})">✏️ 수정</button>
+                    <button onclick="deleteTodo(${todo.id})">🗑 삭제</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function fetchCompleted() {
+            fetchTodos(`${API}/completed`);
+        }
+
+        function fetchNotCompleted() {
+            fetchTodos(`${API}/notcompleted`);
+        }
+
+        // 초기 전체 목록 로드
+        fetchTodos();
+    </script>
+</body>
+</html>

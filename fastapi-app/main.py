@@ -72,9 +72,24 @@ def delete_todo(todo_id: int):
     save_todos(updated_todos)
     return {"message": "To-Do item deleted"}
 
-# HTML 파일 서빙
-@app.get("/", response_class=HTMLResponse)
+@app.get("/todos/completed", response_model = list[dict])
+def get_completed_todos():
+    todos = load_todos()
+    lists = []
+    for todo in todos:
+        if todo["completed"] == True:
+            lists.append(todo)
+    return lists
+
+@app.get("/todos/notcompleted", response_model = list[dict])
+def get_not_completed_todos():
+    todos = load_todos()
+    lists = []
+    for todo in todos:
+        if todo["completed"] == False:
+            lists.append(todo)
+    return lists
+
+@app.get("/")
 def read_root():
-    with open("templates/index.html", "r") as file:
-        content = file.read()
-    return HTMLResponse(content=content)
+    return HTMLResponse("static/index.html")
