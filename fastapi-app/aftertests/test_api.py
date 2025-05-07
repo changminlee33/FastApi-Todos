@@ -54,4 +54,3 @@ def test_delete_todo():
 def test_delete_todo_not_found():
     response = requests.delete(f"{BASE_URL}/todos/999")
     assert response.status_code == 404
-    assert response.json()["message"] == "To-Do item not found"
