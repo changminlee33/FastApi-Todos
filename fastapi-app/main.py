@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import json
 import os
 from fastapi.staticfiles import StaticFiles
+from fastapi import Query
 
 app = FastAPI()
 
@@ -89,6 +90,16 @@ def get_not_completed_todos():
         if todo["completed"] == False:
             lists.append(todo)
     return lists
+
+
+@app.get("/todos/search", response_model=list[dict])
+def search_todos(keyword: str = Query(..., description="검색할 키워드")):
+    todos = load_todos()
+    matched = [
+        todo for todo in todos
+        if keyword.lower() in todo["title"].lower() or keyword.lower() in todo["description"].lower()
+    ]
+    return matched
 
 @app.get("/")
 def read_root():
