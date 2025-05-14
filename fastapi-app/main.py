@@ -105,6 +105,29 @@ def search_todos(keyword: str = Query(..., description="검색할 키워드")):
     ]
     return matched
 
+# To-Do 항목을 완료 처리
+@app.patch("/todos/{todo_id}/complete", response_model=dict)
+def complete_todo(todo_id: int):
+    todos = load_todos()
+    for todo in todos:
+        if todo["id"] == todo_id:
+            todo["completed"] = True
+            save_todos(todos)
+            return todo
+    raise HTTPException(status_code=404, detail="To-Do item not found")
+
+# To-Do 항목을 미완료 처리
+@app.patch("/todos/{todo_id}/uncomplete", response_model=dict)
+def uncomplete_todo(todo_id: int):
+    todos = load_todos()
+    for todo in todos:
+        if todo["id"] == todo_id:
+            todo["completed"] = False
+            save_todos(todos)
+            return todo
+    raise HTTPException(status_code=404, detail="To-Do item not found")
+
+
 @app.get("/")
 def read_root():
     return HTMLResponse("static/index.html")
