@@ -5,8 +5,12 @@ import json
 import os
 from fastapi.staticfiles import StaticFiles
 from fastapi import Query
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI()
+
+# Prometheus 메트릭스 엔드포인트 (/metrics)
+Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 현재 파일 위치 기준 절대 경로 설정
 STATIC_DIR = os.path.join(BASE_DIR, "static")
