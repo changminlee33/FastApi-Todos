@@ -26,7 +26,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090"
+      - "7070:9090"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
   grafana:
@@ -42,7 +42,7 @@ services:
     image: prom/node-exporter:latest
     container_name: node-exporter
     ports:
-      - "9100:9100"
+      - "7100:9100"
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
