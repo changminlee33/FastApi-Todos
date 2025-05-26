@@ -37,8 +37,9 @@
         async function addTodo() {
             const title = document.getElementById("title").value;
             const description = document.getElementById("description").value;
+            const priority = document.getElementById("priority").value;
 
-            const todo = { id: 0, title, description, completed: false };
+            const todo = { id: 0, title, description, completed: false, priority };
 
             await fetch(API, {
                 method: "POST",
@@ -58,8 +59,8 @@
         async function updateTodo(id) {
             const title = document.getElementById("title").value;
             const description = document.getElementById("description").value;
-
-            const updated = { id, title, description, completed: false };
+            const priority = document.getElementById("priority").value;
+            const updated = { id, title, description, completed: false, priority };
 
             await fetch(`${API}/${id}`, {
                 method: "PUT",

@@ -22,6 +22,7 @@ class TodoItem(BaseModel):
     title: str
     description: str
     completed: bool
+    priority: str = "medium"
 
 # JSON 파일 경로
 TODO_FILE = "todo.json"
@@ -40,6 +41,14 @@ def load_todos():
 def save_todos(todos):
     with open(TODO_FILE, "w") as file:
         json.dump(todos, file, indent=4)
+        
+@app.get("/todos/priority/{level}", response_model=list[dict])
+def get_todos_by_priority(level: str):
+    todos = load_todos()
+    level = level.lower()
+    if level not in ["low", "medium", "high"]:
+        raise HTTPException(status_code=400, detail="Invalid priority level")
+    return [todo for todo in todos if todo.get("priority", "medium").lower() == level]
 
 # To-Do 목록 조회
 @app.get("/todos", response_model=list[dict])
