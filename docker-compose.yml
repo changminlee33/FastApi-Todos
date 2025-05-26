@@ -69,6 +69,20 @@ services:
       - grafana-data:/var/lib/grafana
     networks:
       - loadtest-net
+      
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=exampledb
+      - INFLUXDB_ADMIN_ENABLED=true
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin123
+    restart: always
 
   node-exporter:
     image: prom/node-exporter:latest
