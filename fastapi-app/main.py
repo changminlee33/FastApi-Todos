@@ -130,4 +130,6 @@ def uncomplete_todo(todo_id: int):
 
 @app.get("/")
 def read_root():
-    return HTMLResponse("static/index.html")
+    with open("static/index.html", "r") as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content)
