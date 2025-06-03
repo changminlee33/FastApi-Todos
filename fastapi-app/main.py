@@ -171,6 +171,26 @@ def uncomplete_todo(todo_id: int):
             return todo
     raise HTTPException(status_code=404, detail="To-Do item not found")
 
+@app.get("/todos/stats/priority-completion", response_model=dict)
+def get_priority_completion_stats():
+    todos = load_todos()
+    priorities = ["low", "medium", "high"]
+    stats = {}
+
+    for level in priorities:
+        matching = [todo for todo in todos if todo.get("priority", "medium").lower() == level]
+        completed = [todo for todo in matching if todo.get("completed", False)]
+        total = len(matching)
+        completion_rate = round((len(completed) / total) * 100, 1) if total > 0 else 0.0
+
+        stats[level] = {
+            "completed": len(completed),
+            "total": total,
+            "completion_rate": completion_rate
+        }
+
+    return stats
+
 
 @app.get("/")
 def read_root():
