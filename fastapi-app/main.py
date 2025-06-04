@@ -47,6 +47,8 @@ async def log_requests(request: Request, call_next):
 
     return response
 
+app.middleware("http")(log_requests)
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 현재 파일 위치 기준 절대 경로 설정
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
